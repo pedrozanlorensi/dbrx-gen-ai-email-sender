@@ -1,0 +1,90 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "triggers": {
+            "HTTP_Trigger": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "method": "POST",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "receiver": {
+                                "type": [
+                                    "string",
+                                    "array"
+                                ]
+                            },
+                            "subject": {
+                                "type": "string"
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "message_html": {
+                                "type": "string"
+                            },
+                            "ListaEmails": {
+                                "type": "string"
+                            },
+                            "Subject": {
+                                "type": "string"
+                            },
+                            "BodyEmail": {
+                                "type": "string"
+                            },
+                            "IsHtml": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "subject"
+                        ]
+                    }
+                }
+            }
+        },
+        "actions": {
+            "Send_email_(V2)": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['gmail']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "To": "your.email@gmail.com",
+                        "Subject": "@triggerBody()?['subject']",
+                        "Body": "<p class=\"editor-paragraph\">@{triggerBody()?['message_html']}</p>"
+                    },
+                    "path": "/v2/Mail"
+                },
+                "runAfter": {}
+            }
+        },
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "type": "Object",
+                "defaultValue": {}
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "type": "Object",
+            "value": {
+                "gmail": {
+                    "id": "/subscriptions/<YOUR_SUBSCRIPTION_ID>/providers/Microsoft.Web/locations/eastus/managedApis/gmail",
+                    "connectionId": "/subscriptions/<YOUR_SUBSCRIPTION_ID>/resourceGroups/<YOUR_RESOURCE_GROUP>/providers/Microsoft.Web/connections/gmail",
+                    "connectionName": "gmail",
+                    "connectionProperties": {}
+                }
+            }
+        }
+    }
+}

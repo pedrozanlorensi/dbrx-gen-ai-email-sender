@@ -63,11 +63,16 @@ This project demonstrates a complete GenAI workflow using Databricks:
 
 ```
 email_sender/
-├── 0_GenerateSyntheticDataset.py   # Create initial conversation dataset
-├── 1_AppendConversations.py        # Add new conversations (simulates ongoing business)
+├── 0_GenerateSyntheticDataset.py        # Create initial conversation dataset
+├── 1_AppendConversations.py             # Add new conversations (simulates ongoing business)
 ├── 2_GenerateEmails_PromptEngineering.py  # LLM-powered email generation (streaming)
-├── 3_MLFlowEvaluateEmails.py       # Quality evaluation with GenAI scorers
-├── 4_SendEmails.py                 # Adaptive parallel email delivery
+├── 3_MLFlowEvaluateEmails.py            # Quality evaluation with GenAI scorers
+├── 4_SendEmails.py                      # Adaptive parallel email delivery
+├── logic_app_email_sender/
+│   └── logic_app_definition.json        # Azure Logic App definition (importable)
+├── figures/
+│   ├── mlflow-evaluation.png            # MLflow evaluation dashboard screenshot
+│   └── logic-app-diagram.png            # Logic App workflow diagram
 └── README.md
 ```
 
@@ -173,6 +178,14 @@ Uses MLflow GenAI Scorers to evaluate generated emails before sending.
 
 High-performance email delivery via Azure Logic Apps.
 
+**Azure Logic App Flow:**
+
+![Logic App Diagram](figures/logic-app-diagram.png)
+
+The Logic App exposes an HTTP endpoint that receives email requests and sends them via Gmail (or any other configured email connector).
+
+> 📁 See [`logic_app_email_sender/logic_app_definition.json`](logic_app_email_sender/logic_app_definition.json) for the full Logic App definition you can import into Azure.
+
 **Features:**
 - **Auto-tuning:** No manual configuration needed
   - Workers: `min(32, CPU_cores × 4)`
@@ -249,7 +262,7 @@ LLM_ENDPOINT = 'databricks-gpt-5-2'
 CHECKPOINT_VOLUME = '/Volumes/pedroz_catalog/email_conversations/checkpoints/email_generation_streaming'
 
 # Notebook 4
-LOGICAPP_URL = "https://prod-33.eastus.logic.azure.com/..."
+LOGICAPP_URL = "..."
 REQUEST_TIMEOUT = 30
 ```
 
@@ -261,6 +274,17 @@ REQUEST_TIMEOUT = 30
 - Databricks workspace with Unity Catalog enabled
 - Access to a Foundation Model endpoint (e.g., `databricks-gpt-5-2`)
 - Azure Logic App configured for email sending (for step 4)
+
+### Setting Up the Azure Logic App
+
+1. **Create a new Logic App** in the Azure Portal
+2. **Import the definition** from [`logic_app_email_sender/logic_app_definition.json`](logic_app_email_sender/logic_app_definition.json)
+3. **Configure the Gmail connection** (or swap for Outlook/SendGrid/etc.)
+4. **Update placeholders** in the JSON:
+   - `<YOUR_SUBSCRIPTION_ID>` → Your Azure subscription ID
+   - `<YOUR_RESOURCE_GROUP>` → Your resource group name
+   - `your.email@gmail.com` → The sender email address
+5. **Copy the HTTP trigger URL** and set it as `LOGICAPP_URL` in notebook 4
 
 ### Execution Order
 
