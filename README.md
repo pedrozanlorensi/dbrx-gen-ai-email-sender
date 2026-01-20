@@ -159,6 +159,12 @@ Uses MLflow GenAI Scorers to evaluate generated emails before sending.
 | `Guidelines: professional_tone` | Is the tone professional? |
 | `Guidelines: includes_product_links` | Does it include product recommendations? |
 
+**MLflow Evaluation Dashboard:**
+
+![MLflow Evaluation Results](figures/mlflow-evaluation.png)
+
+*The MLflow UI shows pass/fail rates for each scorer, making it easy to identify quality issues before sending emails.*
+
 **Output:** Evaluation traces logged to MLflow experiment for comparison and analysis.
 
 ---
